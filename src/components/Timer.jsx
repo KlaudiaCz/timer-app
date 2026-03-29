@@ -1,12 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import TimerDisplay from "./TimerDisplay";
 import TimerControls from "./TimerControls";
 
 const Timer = () => {
   const timerRef = useRef(null);
 
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState(() => {
+    // Inicjalizacja stanu `time` z funkcją, która sprawdza, czy istnieje zapisany czas w localStorage.
+    return Number(localStorage.getItem('time') || 0) 
+  });
   const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    // Efekt, który zapisuje aktualny czas do localStorage za każdym razem, gdy `time` się zmienia.
+    localStorage.setItem('time', time);
+  }, [time]);
+
 
   // Funkcja, która włącza lub zatrzymuje licznik czasu.
   const toogleTimer = () => {
@@ -32,6 +41,7 @@ const Timer = () => {
     setIsRunning(false);
     setTime(0);
     timerRef.current = null;
+    localStorage.removeItem('time'); // Usuwamy zapisany czas z localStorage podczas resetowania timera.
   };
 
   return (
